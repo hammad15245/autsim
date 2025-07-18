@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'package:autism_fyp/views/screens/login_screen.dart';
+import 'package:autism_fyp/views/screens/locignscreen.dart';
 import 'package:flutter/material.dart';
-import 'dashboard_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

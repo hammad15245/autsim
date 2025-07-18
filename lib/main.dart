@@ -1,5 +1,4 @@
-import 'package:autism_fyp/views/screens/dashboard_screen.dart';
-import 'package:autism_fyp/views/screens/login_screen.dart';
+import 'package:autism_fyp/views/screens/locignscreen.dart';
 import 'package:autism_fyp/views/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +30,7 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
       home: LoginScreen(),
