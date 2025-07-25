@@ -1,4 +1,7 @@
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
+import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   final String text;
@@ -19,7 +22,7 @@ class CustomElevatedButton extends StatelessWidget {
       style: style ??
           ElevatedButton.styleFrom(
         textStyle: const TextStyle(
-          fontSize: 16,
+          fontSize: 14,
           color: Colors.white, 
           fontWeight: FontWeight.w500,
         ),
@@ -149,3 +152,124 @@ class _ProfileCircleButtonState extends State<ProfileCircleButton> {
     );
   }
 }
+
+// class CustomBottomNavBar extends StatefulWidget {
+//   const CustomBottomNavBar({super.key});
+
+//   @override
+//   State<CustomBottomNavBar> createState() => _CustomBottomNavBarState();
+// }
+
+// class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
+//   int _selectedIndex = 0;
+
+//   void _onItemTapped(int index) {
+//     setState(() {
+//       _selectedIndex = index;
+//     });
+//   }
+
+//   Widget _buildNavItem(IconData icon, int index) {
+//     bool isSelected = _selectedIndex == index;
+
+//     return GestureDetector(
+//       onTap: () => _onItemTapped(index),
+//       child: isSelected
+//           ? Container(
+//               decoration: BoxDecoration(
+//                 shape: BoxShape.circle,
+//                 border: Border.all(
+//                   color: Colors.grey.shade400,
+//                 ),
+//               ),
+//               child: Container(
+//                 padding: const EdgeInsets.only(bottom: 10),
+//                 decoration: const BoxDecoration(
+//                   color: Color(0xFF0E83AD),
+//                   shape: BoxShape.circle,
+//                 ),
+//                 child: Icon(icon, color: Colors.white, size: 25),
+//               ),
+//             )
+//           : Icon(icon, color: const Color(0xFF0E83AD), size: 30),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return BottomAppBar(
+//       shape: const CircularNotchedRectangle(),
+//       notchMargin: 10,
+//       color: Colors.white,
+//       elevation: 50,
+//       child: SizedBox(
+//         height: 85,
+//         child: Padding(
+//           padding: const EdgeInsets.only(bottom: 15),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//             children: [
+//               _buildNavItem(Icons.home_outlined, 0),
+//               _buildNavItem(Icons.emoji_flags_outlined, 1),
+//               _buildNavItem(Icons.fitness_center_outlined, 2),
+//               _buildNavItem(Icons.person_outline, 3),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+// /// Builds a WaterDropNavBar with your items and handlers all in one place.
+// Widget buildWaterDropNavBar({
+//   required int selectedIndex,
+//   required ValueChanged<int> onItemSelected,
+//   Color backgroundColor = Colors.white,
+//   Color waterDropColor = const Color(0xFF5B75F0),
+//   Color? inactiveIconColor,
+//   double iconSize = 28,
+//   double? bottomPadding,
+//   required List<BarItem> items,
+// }) {
+//   return WaterDropNavBar(
+//     barItems: items,
+//     selectedIndex: selectedIndex,
+//     onItemSelected: onItemSelected,
+//     backgroundColor: backgroundColor,
+//     waterDropColor: waterDropColor,
+//     inactiveIconColor: inactiveIconColor,
+//     iconSize: iconSize,
+//     bottomPadding: bottomPadding,
+//   );
+// }
+
+
+/// Builds a labeled curved nav bar with your items and handlers in one shot.
+Widget buildCurvedLabeledNavBar({
+  required int selectedIndex,
+  required ValueChanged<int> onItemTap,
+  Color barColor = Colors.white,
+  Color backgroundColor = Colors.blueAccent,
+  Color buttonBackgroundColor = Colors.blueAccent,
+  Curve animationCurve = Curves.easeOut,
+  Duration animationDuration = const Duration(milliseconds: 100),
+  double height = 60,
+  List<CurvedNavigationBarItem> items = const [],
+}) {
+  return CurvedNavigationBar(
+    index: selectedIndex,
+    onTap: onItemTap,
+    color: barColor,
+    backgroundColor: backgroundColor,
+    buttonBackgroundColor: buttonBackgroundColor,
+    animationCurve: animationCurve,
+    animationDuration: animationDuration,
+    height: height,
+    items: items,
+  );
+}
+
+
+
