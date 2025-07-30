@@ -1,5 +1,9 @@
+import 'package:autism_fyp/views/controllers/nav_controller.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 
@@ -247,29 +251,55 @@ class _ProfileCircleButtonState extends State<ProfileCircleButton> {
 
 
 /// Builds a labeled curved nav bar with your items and handlers in one shot.
-Widget buildCurvedLabeledNavBar({
-  required int selectedIndex,
-  required ValueChanged<int> onItemTap,
-  Color barColor = Colors.white,
-  Color backgroundColor = Colors.blueAccent,
-  Color buttonBackgroundColor = Colors.blueAccent,
-  Curve animationCurve = Curves.easeOut,
-  Duration animationDuration = const Duration(milliseconds: 100),
-  double height = 60,
-  List<CurvedNavigationBarItem> items = const [],
-}) {
-  return CurvedNavigationBar(
-    index: selectedIndex,
-    onTap: onItemTap,
-    color: barColor,
-    backgroundColor: backgroundColor,
-    buttonBackgroundColor: buttonBackgroundColor,
-    animationCurve: animationCurve,
-    animationDuration: animationDuration,
-    height: height,
-    items: items,
-  );
+
+class CustomNav {
+  
+  static Widget buildCurvedLabeledNavBar({
+    
+    required ValueChanged<int> onItemTap,
+    Color barColor = Colors.white,
+    Color backgroundColor = const Color.fromARGB(255, 255, 255, 255),
+    Color buttonBackgroundColor = Colors.blueAccent,
+    Curve animationCurve = Curves.easeOut,
+    Duration animationDuration = const Duration(milliseconds: 600),
+    double height = 60,
+  }) {
+    NavController.initialize();
+    
+    return Obx(() {
+      final navController = Get.find<NavController>();
+      return CurvedNavigationBar(
+        index: navController.currentIndex.value,
+        onTap: (index) {
+          navController.onItemSelected(index);
+          onItemTap(index);
+        },
+        color: barColor,
+        backgroundColor: backgroundColor,
+        buttonBackgroundColor: buttonBackgroundColor,
+        animationCurve: animationCurve,
+        animationDuration: animationDuration,
+        height: height,
+items: navController.items,
+      );
+    });
+  }
 }
 
 
 
+//fetch user data and display on avatar 
+
+
+
+// final user = Rx<UserModel?>(null);
+
+// void fetchUserData() {
+//   user.bindStream(FirebaseAuth.instance.authStateChanges().asyncMap((user) {
+//     if (user != null) {
+//       return _firestore.collection('users').doc(user.uid).get().then((doc) => 
+//           UserModel.fromFirestore(doc));
+//     }
+//     return null;
+//   }));
+// }

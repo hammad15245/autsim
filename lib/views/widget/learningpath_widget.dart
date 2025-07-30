@@ -19,7 +19,7 @@ class LearningModulesGridFromFirebase extends StatelessWidget {
 
   final LearningItemController controller = Get.put(LearningItemController());
 
-  @override
+ @override
   Widget build(BuildContext context) {
     controller.fetchLearningItems(selectedCategory);
 
@@ -31,72 +31,55 @@ class LearningModulesGridFromFirebase extends StatelessWidget {
       if (controller.items.isEmpty) {
         return const Center(child: Text("No data found."));
       }
-return GridView.builder(
+
+     return GridView.builder(
   physics: const NeverScrollableScrollPhysics(),
   shrinkWrap: true,
-  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
     crossAxisCount: 2,
-    crossAxisSpacing: screenWidth * 0.05,
-    mainAxisSpacing: screenHeight * 0.03,
+    crossAxisSpacing: 20,
+    mainAxisSpacing: 20,
     childAspectRatio: 1,
   ),
   itemCount: controller.items.length,
   itemBuilder: (context, index) {
-     final item = controller.items[index];
-  final imagePath = getImageForTitle(item.title);
-     
+    final item = controller.items[index];
+    final imagePath = getImageForTitle(item.title); // using index-based image fetch
 
-    final colors = [
-      Color(0xFFFFE0B2),
-      Color(0xFFBBDEFB),
-      Color(0xFFC8E6C9),
-      Color(0xFFFFCDD2),
-      Color(0xFFD1C4E9),
-      Color(0xFFFFF9C4),
-    ];
-
-    return GestureDetector(
-      onTap: () => handleSelectedTitle(item.title),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 300),
-        decoration: BoxDecoration(
-          color: colors[index % colors.length],
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Colors.purple.shade100,
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.purple.shade100,
-              blurRadius: 8,
-              spreadRadius: 2,
-              offset: Offset(0, 6),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              imagePath,
-              width: 70,
-              height: 70,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              item.title,
-              style: TextStyle(
-                fontSize: screenWidth * 0.045,
-                fontWeight: FontWeight.w800,
-                color: Colors.deepPurple.shade700,
-                fontFamily: 'ComicSans', // Use a cartoon-style font
+    return Center(
+      child: GestureDetector(
+        onTap: () => handleSelectedTitle(item.title),
+        child: Container(
+          width: 130, // fixed width
+          height: 140, // fixed height
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30), // more circular
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade300,
+                blurRadius: 6,
+                offset: const Offset(0, 4),
               ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+            ],
+          ),
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(imagePath, width: 50, height: 50),
+              const SizedBox(height: 8),
+              Text(
+                item.title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -110,10 +93,11 @@ return GridView.builder(
     switch (title.toLowerCase()) {
       case 'counting':
         Get.to(() => const LoginScreen());
+
         break;
-      // case 'daily routine':
-      //   Get.to(() => const RoutineScreen());
-      //   break;
+      case 'green':
+        Get.to(() => const LoginScreen());
+        break;
       // case 'colors':
       //   Get.to(() => const ColorsScreen());
       //   break;

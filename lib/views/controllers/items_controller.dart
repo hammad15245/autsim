@@ -1,88 +1,68 @@
-import 'package:autism_fyp/views/screens/home_screen.dart';
-import 'package:autism_fyp/views/screens/locignscreen.dart';
 import 'package:autism_fyp/views/widget/items_model.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-final List<String> localImagePaths = [
-  'assets/images/image1.png',
-  'assets/images/image2.png',
-  'assets/images/image3.png',
-  'assets/images/image4.png',
-  // Add more as needed
-];
+class LearningItemController extends GetxController {
+  final items = <LearningItem>[].obs;
+  final popularItems = <LearningItem>[].obs;
+  final isLoading = false.obs;
+  final isPopularLoading = false.obs;
 
-class LearningModule {
-  final String title;
-  final int imageIndex;
-  final String imagePath;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  LearningModule({
-    required this.title,
-    required this.imageIndex,
-    required this.imagePath,
-  });
-
-  factory LearningModule.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    final int index = data['imageIndex'] ?? 0;
-    return LearningModule(
-      title: data['title'] ?? '',
-      imageIndex: index,
-      imagePath: localImagePaths[index % localImagePaths.length],
-    );
-  }
-}
-
-class LearningModuleController extends GetxController {
-  var isLoading = true.obs;
-  var modules = <LearningModule>[].obs;
-
-  @override
-  void onInit() {
-    super.onInit();
-    fetchModules();
-  }
-
-  Future<void> fetchModules() async {
+  Future<void> fetchLearningItems(String category) async {
     try {
-      final snapshot = await FirebaseFirestore.instance.collection('learningModules').get();
-      final loaded = snapshot.docs.map((doc) => LearningModule.fromFirestore(doc)).toList();
-      modules.assignAll(loaded);
+      isLoading.value = true;
+      items.value = [];
+
+      Query query = _firestore.collection('learningModules');
+
+      if (category != 'All') {
+        query = query.where('category', isEqualTo: category);
+      }
+
+      final querySnapshot = await query.get();
+
+      items.value = querySnapshot.docs
+          .map((doc) => LearningItem.fromFirestore(
+                doc.data() as Map<String, dynamic>,
+              ))
+          .toList();
     } catch (e) {
-      print("Error fetching modules: $e");
+      print("Error fetching learning items: $e");
     } finally {
       isLoading.value = false;
     }
   }
-}
-class LearningItemController extends GetxController {
-  var items = <LearningItem>[].obs;
-  var isLoading = false.obs;
-
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
- Future<void> fetchLearningItems(String category) async {
-  try {
-    isLoading.value = true;
-
-    Query query = _firestore.collection('learningModules');
-
-    if (category != 'All') {
-      query = query.where('category', isEqualTo: category);
-    }
-
-    final querySnapshot = await query.get();
-
-    items.value = querySnapshot.docs
-        .map((doc) => LearningItem.fromFirestore(doc.data() as Map<String, dynamic>))
-        .toList();
-  } catch (e) {
-    print("Error fetching learning items: $e");
-  } finally {
-    isLoading.value = false;
-  }
-}
 
 }
+
+// class popularItemscontroller extends GetxController {
+//   final popularItems = <LearningItem>[].obs;
+//   final isLoading = false.obs;
+
+//   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+// Future<void> fetchPopularItems(dynamic isPopularLoading) async {
+//   try {
+//     isPopularLoading.value = true;
+//     popularItems.value = [];
+
+//     final querySnapshot = await _firestore
+//         .collection('learningModules')
+//         .where('popularid', isNotEqualTo: '')
+//         .orderBy('popularid')
+//         .limit(4)
+//         .get();
+
+//     popularItems.value = querySnapshot.docs
+//         .map((doc) => LearningItem.fromFirestore(doc.data())) // No cast needed
+//         .toList();
+//   } catch (e) {
+//     print("Error fetching popular items: $e");
+//     Get.snackbar('Error', 'Failed to load popular items');
+//   } finally {
+//     isPopularLoading.value = false;
+//   }
+// }
+// }

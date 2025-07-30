@@ -1,23 +1,28 @@
+import 'package:autism_fyp/assets/local_image.dart';
+
 class LearningItem {
   final String title;
   final String category;
   final String imagePath;
-  final int index;
+  // final int popularid;
 
   LearningItem({
     required this.title,
     required this.category,
     required this.imagePath,
-    required this.index,
+    // required this.popularid,
   });
 
-  factory LearningItem.fromFirestore(Map<String, dynamic> data) {
+  factory LearningItem.fromFirestore(Map<String, dynamic> data, ) {
+    final title = data['title'] ?? '';
+    final category = data['category'] ?? '';
+    // final popularid = data['popularid'] ?? '';
+
     return LearningItem(
-      index: data['index'] ?? '',
-      title: data['title'] ?? '',
-      category: data['category'] ?? '',
-      imagePath: data['imagePath'] ?? 'lib/assets/local_image.dart',
+      // popularid: popularid,
+      title: title,
+      category: category,
+      imagePath: getImageForTitle(title),
     );
   }
 }
-

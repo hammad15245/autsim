@@ -1,8 +1,12 @@
+import 'package:autism_fyp/assets/local_image.dart';
+import 'package:autism_fyp/views/controllers/items_controller.dart';
+import 'package:autism_fyp/views/controllers/nav_controller.dart';
+import 'package:autism_fyp/views/screens/search_screen.dart';
 import 'package:autism_fyp/views/widget/learningpath_widget.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:autism_fyp/views/widget/popular_lesson.dart';
+import 'package:autism_fyp/views/widget/custom_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
-import 'package:autism_fyp/views/widget/custom_widget.dart'; // ProfileCircleButton
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,54 +16,54 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _currentIndex = 0;
+  final LearningItemController controller = Get.put(LearningItemController());
   int selectedIndex = 0;
 
-  final List<IconData> _icons = [
-    Icons.home_outlined,
-    Icons.emoji_flags_outlined,
-    Icons.fitness_center_outlined,
-    Icons.person_outline,
-  ];
-
   final List<String> categories = [
-    "All",
-    "Counting",
-    "Alphabets",
-    "Games",
     "Animals",
     "Science",
+    "Games",
+    "Numbers",
+    "Alphabets",
+    "Cognitive Skills",
+    "Fruit",
+    "Daily Routine",
   ];
-  
 
-  String selectedCategory = "All";
-  void _onNavItemSelected(int idx) {
-    setState(() {
-      _currentIndex = idx;
-    });
+  final List<Color> containerColors = [
+    Colors.orange[100]!,
+    Colors.blue[100]!,
+    Colors.green[100]!,
+    Colors.purple[100]!,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    controller.fetchLearningItems(categories[selectedIndex]);
+    // controller.fetchPopularItems();
   }
+
   void _onCategorySelected(int idx) {
-    setState(() {
-      selectedIndex = idx;
-    });
+    setState(() => selectedIndex = idx);
+    controller.fetchLearningItems(categories[idx]);
   }
+  
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    final items = List<CurvedNavigationBarItem>.generate(
-      _icons.length,
-      (i) => CurvedNavigationBarItem(
-        child: Icon(
-          _icons[i],
-          size: screenWidth * 0.07,
-          color: _currentIndex == i ? Colors.white : const Color(0xFF0E83AD),
-        ),
-      ),
-    );
-
+CustomNav.buildCurvedLabeledNavBar(
+  onItemTap: (index) {
+    // Optional: Add any additional onTap logic here
+    // The main navigation is already handled by NavController
+  },
+  barColor: Colors.white,
+  backgroundColor: const Color(0xFF0E83AD),
+  buttonBackgroundColor: const Color(0xFF0E83AD),
+  height: screenHeight * 0.085,
+);
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -71,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// Welcome Text + Profile Icon
+              // Welcome Text + Profile Icon
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -103,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: screenHeight * 0.03),
 
-              /// Banner
+              // Banner
               Container(
                 width: double.infinity,
                 height: screenHeight * 0.22,
@@ -117,7 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Row(
                   children: [
-                    /// Text + Button
                     Expanded(
                       flex: 6,
                       child: Column(
@@ -158,8 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-
-                    /// Image
                     Expanded(
                       flex: 4,
                       child: Image.asset(
@@ -174,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
               SizedBox(height: screenHeight * 0.04),
 
-              /// Choose Interests Title
+              // Choose Interests Title
               Row(
                 children: [
                   Text(
@@ -200,42 +201,48 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: screenHeight * 0.015),
 
-              /// Horizontal Category Buttons
+              // Horizontal Category Buttons
               SizedBox(
-                height: screenHeight * 0.06,
+                height: screenHeight * 0.15,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
                     final isSelected = index == selectedIndex;
                     return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
+                      onTap: () => _onCategorySelected(index),
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: screenWidth * 0.045,
-                          vertical: screenHeight * 0.012,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? const Color(0xFF0E83AD)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Center(
-                          child: Text(
-                            categories[index],
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.035,
-                              color: isSelected ? Colors.white : Colors.black,
-                              fontWeight: FontWeight.w500,
+                        margin: const EdgeInsets.symmetric(horizontal: 8.5),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: screenWidth * 0.18,
+                              height: screenWidth * 0.18,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: isSelected 
+                                      ? const Color(0xFF0E83AD)
+                                      : Colors.grey.shade300,
+                                  width: 2,
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 7),
+                            Text(
+                              categories[index],
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.032,
+                                height: 1.2,
+                                fontWeight: FontWeight.w500,
+                                color: isSelected 
+                                    ? const Color(0xFF0E83AD)
+                                    : Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -243,32 +250,113 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              SizedBox(height: screenHeight * 0.03),
+              SizedBox(height: screenHeight * 0.04),
 
-              ///  Learning Modules Grid (Dynamically Filtered)
-              LearningModulesGridFromFirebase(
-                key: Key(selectedCategory),
-                screenWidth: screenWidth,
-                screenHeight: screenHeight,
-                selectedCategory: categories[selectedIndex],
+              // Learning Items Grid
+              Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (controller.items.isEmpty) {
+                  return const Center(child: Text("No data found."));
+                }
+                return GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: controller.items.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: screenHeight * 0.025,
+                    crossAxisSpacing: screenWidth * 0.04,
+                    childAspectRatio: 1,
+                  ),
+                  itemBuilder: (context, index) {
+                    final item = controller.items[index];
+                    final bgColor = containerColors[index % containerColors.length];
+                    return GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(15),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade300,
+                              blurRadius: 6,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              item.imagePath,
+                              width: 60,
+                              height: 60,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              item.title,
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.04,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+
+              SizedBox(height: screenHeight * 0.04),
+
+              // Popular Lessons Title
+              Row(
+                children: [
+                  Text(
+                    'Popular Lessons',
+                    style: TextStyle(
+                      fontSize: screenWidth * 0.05,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'View all',
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.035,
+                        color: const Color(0xFF0E83AD),
+                      ),
+                    ),
+                  ),
+                ],
               ),
+              SizedBox(height: screenHeight * 0.015),
+              // const PopularLesson(),
             ],
           ),
         ),
       ),
-
-      /// Bottom Navigation
-      bottomNavigationBar: CurvedNavigationBar(
-        index: _currentIndex,
-        height: screenHeight * 0.085,
-        color: Colors.white,
-        backgroundColor: const Color(0xFF0E83AD),
-        buttonBackgroundColor: const Color(0xFF0E83AD),
-        animationCurve: Curves.easeOut,
-        animationDuration: const Duration(milliseconds: 600),
-        items: items,
-        onTap: _onNavItemSelected,
-      ),
-    );
+bottomNavigationBar: CustomNav.buildCurvedLabeledNavBar(
+  onItemTap: (index) {
+    // Optional additional tap logic
+  },
+  barColor: Colors.white,
+  backgroundColor: const Color(0xFF0E83AD),
+  buttonBackgroundColor: const Color(0xFF0E83AD),
+  height: screenHeight * 0.085,
+), // CustomNav
+);
+    
   }
 }
