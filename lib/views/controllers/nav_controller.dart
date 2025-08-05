@@ -1,6 +1,7 @@
 // nav_controller.dart
 import 'dart:io';
 
+import 'package:autism_fyp/views/screens/profile_screen.dart';
 import 'package:autism_fyp/views/screens/signup_screen.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class NavController extends GetxController {
         Get.offAll(() => SignupScreen());
         break;
       case 3:
-        Get.offAll(() => SignupScreen());
+        Get.offAll(() => ProfileScreen());
         break;
     }
   }

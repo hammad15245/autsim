@@ -1,11 +1,8 @@
 import 'package:autism_fyp/views/controllers/nav_controller.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
+import 'package:autism_fyp/views/screens/grid_itemscreens/brushing_teeth/brushingteeth_controller.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   final String text;
@@ -34,7 +31,7 @@ class CustomElevatedButton extends StatelessWidget {
         backgroundColor: const Color(0xFF0E83AD),
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
+          borderRadius: BorderRadius.circular(15.0),
         ),
           ),
       child: Text(text),
@@ -60,24 +57,27 @@ class _GenderSelectorState extends State<GenderSelector> {
   }
 @override
 Widget build(BuildContext context) {
-  return Row(
-    children: [
-      _genderOption(
-        label: 'Male',
-        icon: Icons.male,
-        isSelected: selectedGender == 'Male',
-        onTap: () => _selectGender('Male'),
-        selectedColor: const Color(0xFF0E83AD), // blue
-      ),
-      const SizedBox(width: 16),
-      _genderOption(
-        label: 'Female',
-        icon: Icons.female,
-        isSelected: selectedGender == 'Female',
-        onTap: () => _selectGender('Female'),
-        selectedColor: const Color(0xFF0E83AD), // change black to blue
-      ),
-    ],
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Row(
+      children: [
+        _genderOption(
+          label: 'Male',
+          icon: Icons.male,
+          isSelected: selectedGender == 'Male',
+          onTap: () => _selectGender('Male'),
+          selectedColor: const Color(0xFF0E83AD),
+        ),
+        const SizedBox(width: 16),
+        _genderOption(
+          label: 'Female',
+          icon: Icons.female,
+          isSelected: selectedGender == 'Female',
+          onTap: () => _selectGender('Female'),
+          selectedColor: const Color(0xFF0E83AD), 
+        ),
+      ],
+    ),
   );
 }
 
@@ -303,3 +303,59 @@ items: navController.items,
 //     return null;
 //   }));
 // }
+// custom button with color changing functionality for learning modules
+class ColorChangingButton extends StatefulWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final Color defaultColor;
+  
+
+  const ColorChangingButton({
+    Key? key,
+    
+    required this.text,
+    required this.onPressed,
+    this.defaultColor = const Color(0xFF0E83AD),
+  }) : super(key: key);
+
+  @override
+  ColorChangingButtonState createState() => ColorChangingButtonState();
+}
+
+class ColorChangingButtonState extends State<ColorChangingButton> {
+  Color? currentColor;
+
+  @override
+  void initState() {
+    super.initState();
+    currentColor = widget.defaultColor;
+  }
+
+  void changeColor(Color color) {
+    setState(() {
+      currentColor = color;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: widget.onPressed,
+      style: ElevatedButton.styleFrom(
+        textStyle: const TextStyle(
+          fontSize: 14,
+          color: Colors.white,
+          fontWeight: FontWeight.w500,
+        ),
+        foregroundColor: Colors.white,
+        backgroundColor: currentColor,
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+      ),
+      child: Text(widget.text),
+    );
+  }
+}
+

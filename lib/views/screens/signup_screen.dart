@@ -1,6 +1,8 @@
-import 'dart:math';
+import 'package:autism_fyp/views/controllers/auth_controller.dart';
+import 'package:autism_fyp/views/screens/locignscreen.dart';
 import 'package:autism_fyp/views/widget/custom_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -10,6 +12,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final AuthController authController = Get.put(AuthController());
   bool _obscureText = true;
   String selectedGender = 'Male';
 
@@ -18,162 +21,184 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
-    // Horizontal padding: at least 16, caps content at ~360 width
-    final horizontalPadding = max(16.0, (size.width - 360.0) / 2);
-
-    // Vertical spacing clamped between 6 and 16
-    double vSpace() {
-      final raw = size.height * 0.015;
-      return raw.clamp(6.0, 16.0);
-    }
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          // Smaller header image (30% height)
-          SizedBox(
-            width: double.infinity,
-            height: size.height * 0.30,
-            child: Image.asset(
-              'lib/assets/png1.png',
-              fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: screenWidth,
+              height: screenHeight * 0.35,
+              child: Image.asset(
+                'lib/assets/png1.png',
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-
-          // Form below
-          Expanded(
-            child: SafeArea(
-              top: false,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: horizontalPadding,
-                  vertical: vSpace(),
-                ),
+            SizedBox(height: screenHeight*0.01),
+            Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: screenWidth * 0.9),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Title
                     const Text(
-                      'Create your new account.',
+                      'Create your new account',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: vSpace() / 2),
+                    SizedBox(height: screenHeight * 0.01),
                     const Text(
                       'Create an account to start',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
-                    SizedBox(height: vSpace()),
+                    SizedBox(height: screenHeight * 0.05),
 
-                    // Email
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        'Email Address',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: vSpace() / 2),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Enter your email',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: vSpace() / 1.8,
-                        ),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    SizedBox(height: vSpace()),
-
-                    // Age
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        'Age',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: vSpace() / 2),
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Enter your age',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: vSpace() / 1.8,
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
-                    SizedBox(height: vSpace()),
-
-                    // Password
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: const Text(
-                        'Password',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: vSpace() / 2),
-                    TextField(
-                      obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your password',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscureText ? Icons.visibility_off : Icons.visibility,
-                            size: 20,
-                          ),
-                          onPressed: _toggleVisibility,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: vSpace() / 1.8,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: vSpace()),
-
-                    // Gender
-                    GenderSelector(onGenderSelected: _onGenderChanged),
-                    SizedBox(height: vSpace()),
-
-                    // Register button
+                    // Email Field
                     SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: CustomElevatedButton(
-                        text: 'Register',
-                        onPressed: () {},
+                      width: screenWidth * 0.8,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: screenHeight * 0.01),
+                          SizedBox(
+                            child: TextField(
+                              controller: authController.emailController,
+                              decoration: InputDecoration(
+                                hintText: 'Enter your email',
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.015,
+                                  horizontal: 12,
+                                ),
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                          )
+                        ],
                       ),
                     ),
-                    SizedBox(height:0),
+                    SizedBox(height: screenHeight * 0.02),
+                    SizedBox(
+                      width: screenWidth * 0.8,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: screenHeight * 0.01),
+                          TextField(
+                            controller: authController.usernamecontroller,
+                            decoration: InputDecoration(
+                              hintText: 'Enter your Username',
+                                border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(10),
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.015,
+                                horizontal: 12,
+                              ),
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                        ],
+                      ),
+                    ),
 
-                    // Already have account
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // Age Field
+                    SizedBox(
+                      width: screenWidth * 0.8,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: screenHeight * 0.01),
+                          TextField(
+                            controller: authController.ageController,
+                            decoration: InputDecoration(
+                              hintText: 'Enter your age',
+                              border: OutlineInputBorder(
+   borderSide: BorderSide(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(10),                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.015,
+                                horizontal: 12,
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // Password Field
+                    SizedBox(
+                      width: screenWidth * 0.8,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: screenHeight * 0.01),
+                          TextField(
+                            controller: authController.passwordController,
+                            obscureText: _obscureText,
+                            decoration: InputDecoration(
+                              hintText: 'Enter your password',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  size: 20,
+                                ),
+                                onPressed: _toggleVisibility,
+                              ),
+                              border: OutlineInputBorder(
+   borderSide: BorderSide(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(10),                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: screenHeight * 0.015,
+                                horizontal: 12,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // Gender Selector
+                    GenderSelector(
+                      onGenderSelected: (gender) {
+                        _onGenderChanged(gender);
+                        authController.genderController.text = gender;
+                      },
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // Register Button
+                    Obx(() => authController.isLoading.value
+                        ? const CircularProgressIndicator()
+                        : SizedBox(
+                            width: screenWidth * 0.8,
+                            height: screenHeight * 0.08,
+                            child: CustomElevatedButton(
+                              text: 'Register',
+                              onPressed: () {
+                                authController.registerUser();
+                              },
+                            ),
+                          )),
+                    SizedBox(height: screenHeight * 0.02),
+
+                    // Login Link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -182,7 +207,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           style: TextStyle(fontSize: 14),
                         ),
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () {
+                            Get.to(() => const LoginScreen());
+                          },
                           child: const Text(
                             'Login',
                             style: TextStyle(color: Color(0xFF0E83AD)),
@@ -190,13 +217,13 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(height: vSpace()),
+                    SizedBox(height: screenHeight * 0.02),
                   ],
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

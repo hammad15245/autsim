@@ -1,10 +1,9 @@
 import 'package:autism_fyp/assets/local_image.dart';
+import 'package:autism_fyp/views/controllers/auth_controller.dart';
 import 'package:autism_fyp/views/controllers/items_controller.dart';
 import 'package:autism_fyp/views/controllers/nav_controller.dart';
-import 'package:autism_fyp/views/screens/search_screen.dart';
-import 'package:autism_fyp/views/widget/learningpath_widget.dart';
-import 'package:autism_fyp/views/widget/popular_lesson.dart';
 import 'package:autism_fyp/views/widget/custom_widget.dart';
+import 'package:autism_fyp/views/widget/learningpath_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,6 +16,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final LearningItemController controller = Get.put(LearningItemController());
+    final AuthController authController = Get.put(AuthController());
+
   int selectedIndex = 0;
 
   final List<String> categories = [
@@ -25,45 +26,24 @@ class _HomeScreenState extends State<HomeScreen> {
     "Games",
     "Numbers",
     "Alphabets",
-    "Cognitive Skills",
+    "Emotions",
     "Fruit",
-    "Daily Routine",
+    "Daily Life",
+
+
   ];
 
-  final List<Color> containerColors = [
-    Colors.orange[100]!,
-    Colors.blue[100]!,
-    Colors.green[100]!,
-    Colors.purple[100]!,
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    controller.fetchLearningItems(categories[selectedIndex]);
-    // controller.fetchPopularItems();
-  }
-
-  void _onCategorySelected(int idx) {
-    setState(() => selectedIndex = idx);
-    controller.fetchLearningItems(categories[idx]);
-  }
-  
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // controller.fetchLearningItems(); // Removed category parameter
+  // }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-CustomNav.buildCurvedLabeledNavBar(
-  onItemTap: (index) {
-    // Optional: Add any additional onTap logic here
-    // The main navigation is already handled by NavController
-  },
-  barColor: Colors.white,
-  backgroundColor: const Color(0xFF0E83AD),
-  buttonBackgroundColor: const Color(0xFF0E83AD),
-  height: screenHeight * 0.085,
-);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -75,32 +55,42 @@ CustomNav.buildCurvedLabeledNavBar(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome Text + Profile Icon
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Mohammad Ali\n',
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.055,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'Welcome to Dream Leap',
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.04,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  child: FutureBuilder<String?>(
+  future: authController.fetchUsername(),
+  builder: (context, snapshot) {
+    if (snapshot.hasError) {
+      return Text("Error loading name",
+          style: TextStyle(fontSize: screenWidth * 0.055, fontWeight: FontWeight.bold));
+    } else {
+      return RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '${snapshot.data ?? ''}\n',
+              style: TextStyle(
+                fontSize: screenWidth * 0.055,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            TextSpan(
+              text: 'Welcome to Dream Leap',
+              style: TextStyle(
+                fontSize: screenWidth * 0.04,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+  },
+),
+
                   ),
                   const ProfileCircleButton(),
                 ],
@@ -174,7 +164,6 @@ CustomNav.buildCurvedLabeledNavBar(
               ),
 
               SizedBox(height: screenHeight * 0.04),
-
               // Choose Interests Title
               Row(
                 children: [
@@ -201,7 +190,6 @@ CustomNav.buildCurvedLabeledNavBar(
               ),
               SizedBox(height: screenHeight * 0.015),
 
-              // Horizontal Category Buttons
               SizedBox(
                 height: screenHeight * 0.15,
                 child: ListView.builder(
@@ -210,7 +198,11 @@ CustomNav.buildCurvedLabeledNavBar(
                   itemBuilder: (context, index) {
                     final isSelected = index == selectedIndex;
                     return GestureDetector(
-                      onTap: () => _onCategorySelected(index),
+                      onTap: () {
+                        setState(() {
+                          selectedIndex = index;
+                        });
+                      },
                       child: Container(
                         margin: const EdgeInsets.symmetric(horizontal: 8.5),
                         child: Column(
@@ -226,8 +218,17 @@ CustomNav.buildCurvedLabeledNavBar(
                                       ? const Color(0xFF0E83AD)
                                       : Colors.grey.shade300,
                                   width: 2,
+                                  
                                 ),
+         
                               ),
+         child: ClipOval(
+  child: Image.asset(
+    getCategoryImage(categories[index]),
+    fit: BoxFit.cover,
+  ),
+),
+
                             ),
                             const SizedBox(height: 7),
                             Text(
@@ -251,71 +252,7 @@ CustomNav.buildCurvedLabeledNavBar(
               ),
 
               SizedBox(height: screenHeight * 0.04),
-
-              // Learning Items Grid
-              Obx(() {
-                if (controller.isLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (controller.items.isEmpty) {
-                  return const Center(child: Text("No data found."));
-                }
-                return GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: controller.items.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: screenHeight * 0.025,
-                    crossAxisSpacing: screenWidth * 0.04,
-                    childAspectRatio: 1,
-                  ),
-                  itemBuilder: (context, index) {
-                    final item = controller.items[index];
-                    final bgColor = containerColors[index % containerColors.length];
-                    return GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.shade300,
-                              blurRadius: 6,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              item.imagePath,
-                              width: 60,
-                              height: 60,
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              item.title,
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.04,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              }),
-
-              SizedBox(height: screenHeight * 0.04),
+            //  LearningWidget(),
 
               // Popular Lessons Title
               Row(
@@ -342,21 +279,17 @@ CustomNav.buildCurvedLabeledNavBar(
                 ],
               ),
               SizedBox(height: screenHeight * 0.015),
-              // const PopularLesson(),
             ],
           ),
         ),
       ),
-bottomNavigationBar: CustomNav.buildCurvedLabeledNavBar(
-  onItemTap: (index) {
-    // Optional additional tap logic
-  },
-  barColor: Colors.white,
-  backgroundColor: const Color(0xFF0E83AD),
-  buttonBackgroundColor: const Color(0xFF0E83AD),
-  height: screenHeight * 0.085,
-), // CustomNav
-);
-    
+      bottomNavigationBar: CustomNav.buildCurvedLabeledNavBar(
+        onItemTap: (index) {},
+        barColor: Colors.white,
+        backgroundColor: const Color(0xFF0E83AD),
+        buttonBackgroundColor: const Color(0xFF0E83AD),
+        height: screenHeight * 0.085,
+      ),
+    );
   }
 }
