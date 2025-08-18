@@ -1,8 +1,12 @@
+import 'package:autism_fyp/views/controllers/quizresult_controller.dart';
+import 'package:autism_fyp/views/screens/grid_itemscreens/brushing_teeth/brushing_teethquiz1.dart';
 import 'package:autism_fyp/views/screens/grid_itemscreens/brushing_teeth/brushingteeth_controller.dart';
+import 'package:autism_fyp/views/screens/grid_itemscreens/brushingteethquiz2/screen.dart';
 import 'package:autism_fyp/views/screens/progressheader.dart';
-import 'package:autism_fyp/views/widget/custom_widget.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
+
 class BrushingteethScreen extends StatefulWidget {
   const BrushingteethScreen({super.key});
 
@@ -11,13 +15,52 @@ class BrushingteethScreen extends StatefulWidget {
 }
 
 class _BrushingteethScreenState extends State<BrushingteethScreen> {
-final GlobalKey<ColorChangingButtonState> buttonKey = GlobalKey();
+  final AnswerController answerController = Get.put(AnswerController());
+  final brushingController = BrushingTeethController.instance;
 
-  void handleAnswer(bool isCorrect) {
-    final buttonState = buttonKey.currentState;
-    if (buttonState != null) {
-      buttonState.changeColor(isCorrect ? Colors.green : Colors.red);
+final ConfettiController confettiController =
+    ConfettiController(duration: const Duration(seconds: 2));
+
+  @override
+  void initState() {
+    super.initState();
+    // confettiController =
+    //     ConfettiController(duration: const Duration(seconds: 2));
+
+    // Listen for answer changes to trigger animations
+    ever(answerController.hasAnswered, (answered) {
+      if (answered == true) {
+        if (answerController.isCorrectAnswer()) {
+          confettiController.play();
+        }
+      }
+    });
+void _handleAnswer(int index) {
+  if (!answerController.hasAnswered.value) {
+    answerController.selectAnswer(index);
+
+    bool correct = answerController.isCorrectAnswer();
+    if (correct) {
+      confettiController.play();
     }
+
+    // ✅ Update the total score in Firebase
+    QuizScoreService().updateTotalScoreByEmail(isCorrect: correct);
+
+    // Delay and go to next screen
+    Future.delayed(const Duration(seconds: 5), () {
+      Get.to(() => const Quiz2screen());
+    });
+  }
+}
+
+
+  }
+
+  @override
+  void dispose() {
+    confettiController.dispose();
+    super.dispose();
   }
 
   @override
@@ -34,38 +77,21 @@ final GlobalKey<ColorChangingButtonState> buttonKey = GlobalKey();
               SizedBox(height: screenHeight * 0.06),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: StepProgressHeader(
-                  currentStep: 1,
-                  onBack: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: Consumer<BrushingTeethController>(
-                    builder: (context, controller, child) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: controller.getStars(size: 28.0),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                child: Column(
+                  children: [
+                    StepProgressHeader(
+                      currentStep: 1,
+                      onBack: () => Navigator.pop(context),
+                    ),
+                  
+                  ],
                 ),
               ),
               SizedBox(height: screenHeight * 0.15),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  'What does this picture refers to?',
+                  'What does this picture refer to?',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -73,79 +99,50 @@ final GlobalKey<ColorChangingButtonState> buttonKey = GlobalKey();
                 ),
               ),
               SizedBox(height: screenHeight * 0.04),
-              Center(
-                child: Image.asset(
-                  'lib/assets/learning_module_ASSETS/toothbrush.png',
-                  height: screenHeight * 0.3,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.04),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 2.5,
-                    physics: NeverScrollableScrollPhysics(),
-                    children: [
-                      ColorChangingButton(
-                        key: buttonKey,
-                        text: 'Toothbrush',
-                        onPressed: () {
-                          handleAnswer(true);
-                        },
-                      ),
-                      ColorChangingButton(
-                        text: 'spoon',
-                        onPressed: () {
-                          handleAnswer(false);
-                        },
-                      ),
-                      ColorChangingButton(
-                        text: 'Comb',
-                        onPressed: () {
-                          handleAnswer(false);
-                        },
-                      ),
-                      ColorChangingButton(
-                        text: 'Towel',
-                        onPressed: () {
-                          handleAnswer(false);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            SizedBox(height: screenHeight * 0.07),
-              Align(
-                                  alignment: Alignment.bottomCenter,
 
-                child: Center(
-                
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: CustomElevatedButton(
-                      onPressed: () {
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0E83AD),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      text: 'Next',
+              // ✅ Image with animations overlay
+              Center(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset(
+                      'lib/assets/learning_module_ASSETS/toothbrush.png',
+                      height: screenHeight * 0.3,
+                      fit: BoxFit.contain,
                     ),
-                  ),
+
+                    // 🎉 Confetti animation for correct answer
+                    ConfettiWidget(
+                      confettiController: confettiController,
+                      blastDirectionality: BlastDirectionality.explosive,
+                      shouldLoop: false,
+                      emissionFrequency: 0.05,
+                      numberOfParticles: 20,
+                      gravity: 0.3,
+                    ),
+
+                    // Cross animation for wrong answer
+                    Obx(() {
+                      if (answerController.showFeedback.value &&
+                          !answerController.isCorrectAnswer()) {
+                        return AnimatedOpacity(
+                          opacity: 1,
+                          duration: const Duration(milliseconds: 300),
+                          child:
+                              const Icon(Icons.close, color: Colors.red, size: 150),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                  ],
                 ),
               ),
-              SizedBox(height: screenHeight * 0.04),
+
+              SizedBox(height: screenHeight * 0.02),
+
+              Center(
+                child: BrushingTeethQuiz(),
+              ),
             ],
           ),
         ),

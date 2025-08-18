@@ -71,7 +71,7 @@ void navigateToItemScreen(String title, BuildContext context) {
     case 'brushing teeth':
       Get.to(() => ChangeNotifierProvider(
         create: (_) => BrushingTeethController(),
-        child: const BrushingteethScreen(),
+        child:  BrushingteethScreen(),
       ));
       break;
     // case 'washing hands':

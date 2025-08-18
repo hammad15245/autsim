@@ -1,8 +1,5 @@
-import 'package:autism_fyp/views/controllers/nav_controller.dart';
 import 'package:autism_fyp/views/widget/learningpath_widget.dart';
-import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -11,7 +8,6 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    final navController = Get.find<NavController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -55,17 +51,17 @@ class SearchScreen extends StatelessWidget {
         ),
       ),
       
-      bottomNavigationBar: Obx(() => CurvedNavigationBar(
-        index: navController.currentIndex.value,
-        height: screenHeight * 0.085,
-        color: Colors.white,
-        backgroundColor: const Color(0xFF0E83AD),
-        buttonBackgroundColor: const Color(0xFF0E83AD),
-        animationCurve: Curves.easeOut,
-        animationDuration: const Duration(milliseconds: 600),
-        items: navController.items,
-        onTap: navController.onItemSelected,
-      )),
+      // bottomNavigationBar: Obx(() => CurvedNavigationBar(
+      //   index: navController.currentIndex.value,
+      //   height: screenHeight * 0.085,
+      //   color: Colors.white,
+      //   backgroundColor: const Color(0xFF0E83AD),
+      //   buttonBackgroundColor: const Color(0xFF0E83AD),
+      //   animationCurve: Curves.easeOut,
+      //   animationDuration: const Duration(milliseconds: 600),
+      //   items: navController.items,
+      //   onTap: navController.onItemSelected,
+      // )),
     );
   }
 }

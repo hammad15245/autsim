@@ -1,4 +1,6 @@
 import 'package:autism_fyp/views/controllers/nav_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
@@ -126,16 +128,15 @@ Widget build(BuildContext context) {
   }
 }
 
+
 class ProfileCircleButton extends StatefulWidget {
   final double size;
   final VoidCallback? onPressed;
-  final ImageProvider? avatar;
 
   const ProfileCircleButton({
     Key? key,
-    this.size = 48.0,
+    this.size = 45.0,
     this.onPressed,
-    this.avatar,
   }) : super(key: key);
 
   @override
@@ -143,19 +144,44 @@ class ProfileCircleButton extends StatefulWidget {
 }
 
 class _ProfileCircleButtonState extends State<ProfileCircleButton> {
+  Future<String?> _fetchAvatarPath() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      return doc.data()?['avatar'];
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onPressed,
-      child: CircleAvatar(
-        radius: widget.size / 2,
-        backgroundImage: widget.avatar ??
-            const AssetImage('assets/images/default_avatar.png'),
-        backgroundColor: const Color(0xFF0E83AD),
-      ),
+    return FutureBuilder<String?>(
+      future: _fetchAvatarPath(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircleAvatar(
+            radius: widget.size / 2,
+            backgroundColor: const Color(0xFF0E83AD),
+            child: const CircularProgressIndicator(color: Colors.white),
+          );
+        }
+
+        final avatarPath = snapshot.data;
+        return GestureDetector(
+          onTap: widget.onPressed,
+          child: CircleAvatar(
+            radius: widget.size / 2,
+            backgroundImage: (avatarPath != null && avatarPath.isNotEmpty)
+                ? AssetImage(avatarPath) 
+                : const AssetImage('assets/images/default_avatar.png'),
+            backgroundColor: const Color(0xFF0E83AD),
+          ),
+        );
+      },
     );
   }
 }
+
 
 // class CustomBottomNavBar extends StatefulWidget {
 //   const CustomBottomNavBar({super.key});
@@ -264,7 +290,7 @@ class CustomNav {
     Duration animationDuration = const Duration(milliseconds: 600),
     double height = 60,
   }) {
-    NavController.initialize();
+  final navController = Get.put(NavController(), permanent: true);
     
     return Obx(() {
       final navController = Get.find<NavController>();
@@ -315,7 +341,7 @@ class ColorChangingButton extends StatefulWidget {
     
     required this.text,
     required this.onPressed,
-    this.defaultColor = const Color(0xFF0E83AD),
+    this.defaultColor = const Color(0xFF0E83AD), required Color color, required bool isDisabled,
   }) : super(key: key);
 
   @override
@@ -359,3 +385,100 @@ class ColorChangingButtonState extends State<ColorChangingButton> {
   }
 }
 
+// color_changing_button
+class ColorChangingButto extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final Color color;
+  final bool isDisabled;
+
+  const ColorChangingButto({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    required this.color,
+    required this.isDisabled,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: isDisabled ? null : onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Text(text, style: const TextStyle(fontSize: 16)),
+    );
+  }
+}
+
+
+class quizbutton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  const quizbutton({
+    Key? key,
+    required this.text,
+    required this.onPressed, required ButtonStyle style,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      child: Text(text),
+    );
+  }
+}
+class _ActionRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color iconBackground;
+  final Color iconColor;
+  
+  const _ActionRow({
+    required this.icon,
+    required this.label,
+    required this.iconBackground,
+    required this.iconColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: iconBackground,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const Spacer(),
+          const Icon(Icons.chevron_right, color: Colors.grey),
+        ],
+      ),
+    );
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:autism_fyp/views/screens/gender_selectionscreen.dart';
 import 'package:autism_fyp/views/screens/home_screen.dart';
 import 'package:autism_fyp/views/screens/locignscreen.dart';
 import 'package:flutter/material.dart';
@@ -17,17 +18,13 @@ class AuthController extends GetxController {
 
   var isLoading = false.obs;
 
-  // Register method
+  // ------------------- REGISTER -------------------
   Future<void> registerUser() async {
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
     final age = ageController.text.trim();
     final gender = genderController.text.trim();
-    final username = usernamecontroller.text.trim();  
-    // if (email.isEmpty || password.isEmpty || age.isEmpty || gender.isEmpty) {
-    //   Get.snackbar("Error", "All fields are required");
-    //   return;
-    // }
+    final username = usernamecontroller.text.trim();
 
     try {
       isLoading.value = true;
@@ -43,6 +40,7 @@ class AuthController extends GetxController {
         "gender": gender,
         "uid": userCred.user!.uid,
         "username": username,
+        "avatar": null, // placeholder
       });
 
       Get.offAll(() => const LoginScreen());
@@ -53,25 +51,41 @@ class AuthController extends GetxController {
     }
   }
 
-  // Login method
+  // ------------------- LOGIN -------------------
   Future<void> loginUser() async {
     final email = usernamecontroller.text.trim();
     final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
-      Get.snackbar("Error", "email and Password cannot be empty");
+      Get.snackbar("Error", "Email and Password cannot be empty");
       return;
     }
 
     try {
       isLoading.value = true;
 
-      await _auth.signInWithEmailAndPassword(
+      final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      Get.offAll(() => const HomeScreen());
+      final userId = userCredential.user?.uid;
+      if (userId == null) {
+        Get.snackbar("Error", "Something went wrong");
+        return;
+      }
+
+      final docSnapshot = await _firestore.collection('users').doc(userId).get();
+      final userData = docSnapshot.data() ?? {};
+
+      final hasGender = userData.containsKey('gender') && userData['gender'] != null;
+      final hasAvatar = userData.containsKey('avatar') && userData['avatar'] != null;
+
+      if (hasGender && hasAvatar) {
+        Get.offAll(() => const HomeScreen());
+      } else {
+        Get.offAll(() => const GenderSelectionScreen());
+      }
     } catch (e) {
       Get.snackbar("Login Failed", "Invalid email or password");
     } finally {
@@ -79,29 +93,42 @@ class AuthController extends GetxController {
     }
   }
 
-  // Sign out method
+  // ------------------- LOGOUT -------------------
   Future<void> logout() async {
     await _auth.signOut();
     Get.offAllNamed("/login");
   }
 
-  //fetch user data
+  // ------------------- FETCH USER -------------------
 Future<String?> fetchUsername() async {
-  try {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null) return null;
-
-    DocumentSnapshot doc = await _firestore.collection('users').doc(uid).get();
-    if (doc.exists) {
-      return doc['username'];
-    } else {
-      return null;
-    }
-  } catch (e) {
-    print("Error fetching username: $e");
-    return null;
+  final user = _auth.currentUser;
+  if (user != null) {
+    final doc = await _firestore.collection('users').doc(user.uid).get();
+    return doc.data()?['username'] as String?;
   }
+  return null;
 }
 
 
+  // ------------------- SAVE USERNAME -------------------
+  Future<void> saveUsername(String username) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    await _firestore.collection('users').doc(user.uid).set({
+      'username': username,
+    }, SetOptions(merge: true));
+  }
+
+  // ------------------- SAVE AVATAR -------------------
+  Future<void> saveAvatar(String avatarPath) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    await _firestore.collection('users').doc(user.uid).update({
+      'avatar': avatarPath,
+    });
+  }
+
+  fetchUserProfile() {}
 }
