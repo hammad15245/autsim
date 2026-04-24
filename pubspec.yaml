@@ -61,6 +61,7 @@ dependencies:
   path_provider: ^2.1.5
   speech_to_text: ^7.3.0
   video_player: ^2.10.0
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:
@@ -110,17 +111,21 @@ flutter:
     - lib/assets/quiz_goingtobed/
     - lib/assets/quiz_wakeup/
     - lib/assets/add_sub_quiz/
+    - lib/assets/poems/
     - lib/assets/quiz1_birds/
     - lib/assets/home_animals/
     - lib/assets/game_assets/
     - assets/images/player.png
     - assets/images/star.png
     - assets/images/bg.png
-    - assets/audio/bg_music.mp3
     - assets/audio/catch_sound.mp3
     - assets/audio/point_sound.mp3
     - assets/audio/jump_sound.mp3
     - assets/audio/bg_music2.mp3
+    - assets/audio/twinkle.mp3
+    - assets/audio/baa_baa.mp3
+    - assets/audio/old_macdonald.mp3
+    - assets/audio/abc_song.mp3
     - assets/audio/owl.mp3
     - assets/audio/bird.mp3
     - assets/images/fish1.png
@@ -131,7 +136,16 @@ flutter:
     - assets/images/ocean_bg.png
     - assets/Videos/splash.mp4
     - assets/images/apple_templete.png
-  # An image asset can refer to one or more resolution-specific "variants", see
+    - lib/assets/meadow_pattern.jpg
+    - lib/assets/grass_bottom_green.jpg
+    - lib/assets/cloud_top.jpg
+    - lib/assets/barn_background.jpg
+    - lib/assets/rainbow_overlay.jpg
+    - lib/assets/games_icons/
+    - assets/audio/pop.mp3
+    - assets/audio/correct.mp3  
+    - assets/audio/wrong.mp3
+    # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
   # For details regarding adding assets from package dependencies, see

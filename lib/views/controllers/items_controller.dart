@@ -119,6 +119,9 @@ void navigateToItemScreen(String title, BuildContext context) {
           case 'catch the stars game':
       Get.to(() =>  Game1Screen());
       break;
+      case 'color Poem':
+      Get.to(() =>  Game2Screen());
+      break;
       
       
     default:

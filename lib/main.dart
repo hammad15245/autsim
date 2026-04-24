@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'firebase_options.dart';
-
 import 'package:autism_fyp/views/controllers/global_audio_services.dart';
 import 'package:autism_fyp/views/controllers/progress_controller.dart';
 import 'package:autism_fyp/views/controllers/nav_controller.dart';
-
 import 'package:autism_fyp/views/screens/grid_itemscreens/ABC_letters_modules/abc_letters_module_controller.dart';
 import 'package:autism_fyp/views/screens/grid_itemscreens/Birds_module/birds_module_controller.dart';
 import 'package:autism_fyp/views/screens/grid_itemscreens/Brushing_teeth_modules/brushing_teeth_module_controller.dart';
@@ -22,16 +19,13 @@ import 'package:autism_fyp/views/widget/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  
   await Get.putAsync(() async => AudioInstructionService());
-
   Get.put(ProgressController(), permanent: true);
   Get.lazyPut(() => NavController(), fenix: true);
-
   Get.lazyPut(() => HomeAnimalsController(), fenix: true);
   Get.lazyPut(() => GoingToBedController(), fenix: true);
   Get.lazyPut(() => EatingFoodController(), fenix: true);

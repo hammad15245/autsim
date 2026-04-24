@@ -2,7 +2,9 @@ import 'package:autism_fyp/assets/local_image.dart';
 import 'package:autism_fyp/views/controllers/auth_controller.dart';
 import 'package:autism_fyp/views/controllers/items_controller.dart';
 import 'package:autism_fyp/views/controllers/nav_controller.dart';
+import 'package:autism_fyp/views/screens/game_screen.dart';
 import 'package:autism_fyp/views/screens/leaderboard_screen.dart';
+import 'package:autism_fyp/views/screens/poem_screen.dart';
 import 'package:autism_fyp/views/screens/profile_screen.dart';
 import 'package:autism_fyp/views/screens/search_screen.dart';
 import 'package:autism_fyp/views/widget/custom_widget.dart';
@@ -63,8 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
         }).toList();
 
         if (prefsDoc.exists) {
-          final preferences = prefsDoc.data()?['answers'] as Map<String, dynamic>? ?? {};
-          final userInterests = List<String>.from(preferences['interests'] ?? []);
+          final preferences =
+              prefsDoc.data()?['answers'] as Map<String, dynamic>? ?? {};
+          final userInterests =
+              List<String>.from(preferences['interests'] ?? []);
 
           recommendedModules = allModules.where((module) {
             final moduleTitle = module['title'].toString().toLowerCase();
@@ -92,7 +96,6 @@ class _HomeScreenState extends State<HomeScreen> {
         {'title': 'Colors'}
       ];
       popularModules = [
- 
         {'title': 'Birds'},
         {'title': 'Home animals'},
         {'title': 'Numbers'}
@@ -114,7 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
         .collection('assignedModules')
         .get();
 
-    assignedModules = snapshot.docs.map((doc) => doc.data()['title'] as String? ?? '').toList();
+    assignedModules = snapshot.docs
+        .map((doc) => doc.data()['title'] as String? ?? '')
+        .toList();
     setState(() {});
   }
 
@@ -150,16 +155,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                     future: authController.fetchUsername(),
                                     builder: (context, snapshot) {
                                       if (snapshot.hasError) {
-                                        return Text("Error loading name",
-                                            style: TextStyle(
-                                                fontSize: screenWidth * 0.055,
-                                                fontWeight: FontWeight.bold));
+                                        return Text(
+                                          "Error loading name",
+                                          style: TextStyle(
+                                            fontSize: screenWidth * 0.055,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        );
                                       } else {
                                         return RichText(
                                           text: TextSpan(
                                             children: [
                                               TextSpan(
-                                                text: '${snapshot.data ?? ''}\n',
+                                                text:
+                                                    '${snapshot.data ?? ''}\n',
                                                 style: TextStyle(
                                                   fontSize: screenWidth * 0.055,
                                                   fontWeight: FontWeight.bold,
@@ -181,7 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.notifications, size: 30),
+                                  icon: const Icon(Icons.notifications,
+                                      size: 30),
                                   onPressed: () {
                                     setState(() {
                                       showNotifications = !showNotifications;
@@ -195,9 +205,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ],
                             ),
+
                             SizedBox(height: screenHeight * 0.03),
 
-                            // Banner
                             Container(
                               width: double.infinity,
                               height: screenHeight * 0.22,
@@ -214,8 +224,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Expanded(
                                     flex: 6,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Find amazing lessons for your kid',
@@ -229,12 +241,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         SizedBox(
                                           width: screenWidth * 0.35,
                                           child: ElevatedButton(
-                                            onPressed: () => Get.to(HomesearchingScreen()),
+                                            onPressed: () =>
+                                                Get.to(HomesearchingScreen()),
                                             style: ElevatedButton.styleFrom(
                                               backgroundColor: Colors.white,
-                                              foregroundColor: const Color(0xFF0E83AD),
+                                              foregroundColor:
+                                                  const Color(0xFF0E83AD),
                                               shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(20),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
                                               ),
                                               padding: EdgeInsets.symmetric(
                                                 vertical: screenHeight * 0.012,
@@ -263,9 +278,147 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
 
-                            SizedBox(height: screenHeight * 0.04),
+                            SizedBox(height: screenHeight * 0.025),
+GestureDetector(
+  onTap: () => PoemBottomSheet.open(),
+  child: Container(
+    width: double.infinity,
+    height: screenHeight * 0.11,
+    padding: EdgeInsets.symmetric(
+      horizontal: screenWidth * 0.05,
+    ),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [
+          Color(0xFF0E83AD),
+          Color(0xFF0E83AD),
+        ],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: const Color(0xFF0E83AD).withOpacity(0.3),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        SizedBox(
+          width: screenWidth * 0.18,
+          height: screenHeight * 0.11,
+          child: Image.asset(
+            'lib/assets/poems_brain.png',
+            fit: BoxFit.contain,
+          ),
+        ),
+        SizedBox(width: screenWidth * 0.04),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Poems',
+              style: TextStyle(
+                fontSize: screenWidth * 0.05,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              'Tap to explore fun poems!',
+              style: TextStyle(
+                fontSize: screenWidth * 0.032,
+                color: Colors.white70,
+              ),
+            ),
+          ],
+        ),
+        const Spacer(),
+        const Icon(
+          Icons.arrow_forward_ios_rounded,
+          color: Colors.white,
+          size: 20,
+        ),
+      ],
+    ),
+  ),
+),
+                            SizedBox(height: screenHeight * 0.025),
 
-                            // Recommended For You Section
+GestureDetector(
+  onTap: () => GameBottomSheet.open(),
+  child: Container(
+    width: double.infinity,
+    height: screenHeight * 0.11,
+    padding: EdgeInsets.symmetric(
+      horizontal: screenWidth * 0.05,
+    ),
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        colors: [
+          Color(0xFF0E83AD),
+          Color(0xFF0E83AD),
+        ],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(
+          color: const Color(0xFF0E83AD).withOpacity(0.3),
+          blurRadius: 8,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Row(
+  children: [
+    Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Games',
+          style: TextStyle(
+            fontSize: screenWidth * 0.05,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          'Tap to find amazing fun games!',
+          style: TextStyle(
+            fontSize: screenWidth * 0.032,
+            color: Colors.white70,
+          ),
+        ),
+      ],
+    ),
+    const Spacer(),
+    SizedBox(
+      width: screenWidth * 0.18,
+      height: screenHeight * 0.11,
+      child: Image.asset(
+        'lib/assets/brain_game.png',
+        fit: BoxFit.contain,
+      ),
+    ),
+    SizedBox(width: screenWidth * 0.02), 
+    const Icon(
+      Icons.arrow_forward_ios_rounded,
+      color: Colors.white,
+      size: 20,
+    ),
+  ],
+),
+  ),
+),
+
+SizedBox(height: screenHeight * 0.04),                        
                             Row(
                               children: [
                                 Text(
@@ -278,7 +431,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const Spacer(),
                                 TextButton(
-                                  onPressed: () => navController.pageController.jumpToPage(1),
+                                  onPressed: () => navController
+                                      .pageController
+                                      .jumpToPage(1),
                                   child: Text(
                                     'View all',
                                     style: TextStyle(
@@ -291,12 +446,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(height: screenHeight * 0.015),
 
-                            // Recommended Modules Grid
                             GridView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: recommendedModules.length,
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
@@ -311,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             SizedBox(height: screenHeight * 0.04),
 
-                            // Popular Lessons Section
+                            // ── Popular Lessons ───────────────────────
                             Row(
                               children: [
                                 Text(
@@ -337,12 +492,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(height: screenHeight * 0.015),
 
-                            // Popular Modules Grid
                             GridView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: popularModules.length,
-                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
@@ -365,7 +520,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           bottomNavigationBar: CustomNav.buildCurvedLabeledNavBar(
-            onItemTap: (index) => navController.pageController.jumpToPage(index),
+            onItemTap: (index) =>
+                navController.pageController.jumpToPage(index),
             barColor: Colors.white,
             backgroundColor: const Color(0xFF0E83AD),
             buttonBackgroundColor: const Color(0xFF0E83AD),
@@ -373,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        // Notification Popup
+        // ── Notification Popup ──────────────────────────────────────
         if (showNotifications)
           Material(
             color: Colors.transparent,
@@ -392,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 8,
@@ -403,9 +559,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
+                        const Text(
                           'Assigned Modules',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         if (assignedModules.isEmpty)
@@ -413,10 +572,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         else
                           ...assignedModules.map(
                             (module) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 4),
                               child: Row(
                                 children: [
-                                  Icon(Icons.check_circle_outline, size: 20, color: Colors.blue),
+                                  const Icon(Icons.check_circle_outline,
+                                      size: 20, color: Colors.blue),
                                   const SizedBox(width: 8),
                                   Expanded(child: Text(module)),
                                 ],
@@ -434,7 +595,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildModuleCard(String moduleTitle, int index, BuildContext context) {
+  Widget _buildModuleCard(
+      String moduleTitle, int index, BuildContext context) {
     return GestureDetector(
       onTap: () => navigateToItemScreen(moduleTitle, context),
       child: Container(
