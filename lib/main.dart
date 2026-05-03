@@ -1,3 +1,4 @@
+import 'package:autism_fyp/views/widget/inactivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,7 +15,7 @@ import 'package:autism_fyp/views/screens/grid_itemscreens/bathing_module/bathing
 import 'package:autism_fyp/views/screens/grid_itemscreens/counting_module/counting_module_controller.dart';
 import 'package:autism_fyp/views/screens/grid_itemscreens/eating_food_module/eating_food_controller.dart';
 import 'package:autism_fyp/views/screens/grid_itemscreens/home_animals_module/home_animal_controller.dart';
-
+import 'package:autism_fyp/views/controllers/inactivity_controller.dart';
 import 'package:autism_fyp/views/widget/splash_screen.dart';
 
 void main() async {
@@ -35,6 +36,7 @@ void main() async {
   Get.lazyPut(() => AbcLettersModuleController(), fenix: true);
   Get.lazyPut(() => BirdsModuleController(), fenix: true);
   Get.lazyPut(() => AddSubtractModuleController(), fenix: true);
+  Get.put(InactivityController(), permanent: true);
 
   runApp(const MyApp());
 }
@@ -45,9 +47,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+           builder: (context, child) {
+        return InactivityWrapper(child: child!);
+      },
       title: 'Autism App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        
         useMaterial3: true,
       ),
       home: SplashScreen(),
